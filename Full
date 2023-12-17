@@ -1,0 +1,566 @@
+import java.util.Scanner;
+
+public class proj {
+    // Constants//
+    public static final int CODIMINIM = 100;
+    public static final int CODIMAXIM = 999;
+    public static final int SUBCATEGORIES = 3;
+    public static final double PREUMINIM = 1;
+    public static final double PREUMAXIM = 99;
+    public static final int CATEGORIA0 = 0;
+    public static final int CATEGORIA1 = 1;
+    public static final int CATEGORIA2 = 2;
+    public static final int CATEGORIA3 = 3;
+    public static final int SUBCATEGORIA00 = 0;
+    public static final int SUBCATEGORIA01 = 1;
+    public static final int SUBCATEGORIA02 = 2;
+    public static final int SUBCATEGORIA10 = 0;
+    public static final int SUBCATEGORIA11 = 1;
+    public static final int SUBCATEGORIA12 = 2;
+    public static final int SUBCATEGORIA20 = 0;
+    public static final int SUBCATEGORIA21 = 1;
+    public static final int SUBCATEGORIA22 = 2;
+    public static final int SUBCATEGORIA30 = 0;
+    public static final int SUBCATEGORIA31 = 1;
+    public static final int SUBCATEGORIA32 = 2;
+    private static final String NOMCATEGORIA0 = "Educació i formació";
+    private static final String NOMCATEGORIA1 = "Oci i temps lliure";
+    private static final String NOMCATEGORIA2 = "Novel·la";
+    private static final String NOMCATEGORIA3 = "Salut i benestar";
+    private static final String NOMCATEGORIA00 = "Ciència i enginyeria";
+    private static final String NOMCATEGORIA01 = "Biografies i memòries";
+    private static final String NOMCATEGORIA02 = "Finances";
+    private static final String NOMCATEGORIA10 = "Guies de viatge";
+    private static final String NOMCATEGORIA11 = "Cuina";
+    private static final String NOMCATEGORIA12 = "Esports";
+    private static final String NOMCATEGORIA20 = "Adolescents";
+    private static final String NOMCATEGORIA21 = "Ciència ficció i fantasia";
+    private static final String NOMCATEGORIA22 = "Comèdia i humor";
+    private static final String NOMCATEGORIA30 = "Nutrició";
+    private static final String NOMCATEGORIA31 = "Medicina General";
+    private static final String NOMCATEGORIA32 = "Fisioteràpia";
+    public static final int UNITATMINIM = 1;
+    public static final int UNITATMAXIM = 1000000;
+    public static final int INTENTSMAXIMS = 3;
+    public static final int MAXCLIENTS = 10;
+    public static final int CATEGORIES = 4; // Per calcular l'import total per categoria i percentatge)//
+
+    // Categories: fem la millora de posar les cate amb menys lineas//
+
+    public static final int[][] ARRAY_BIDIMENSIONAL = new int[MAXCLIENTS][5];
+
+    // añadimos un elemento extra que calcule el importe total//
+    private static void mostrarResumEstadistic(int[][] arrayBidimensional, int totalLibros) {
+        System.out.println("Resum estadístic de les dades:");
+        System.out.println("Número total de llibres: " + totalLibros);
+
+        for (int cat = 0; cat < CATEGORIES; cat++) {
+            int librosEnCategoria = contarLibrosEnCategoria(arrayBidimensional, totalLibros, cat);
+            double importeTotalEnCategoria = calcularImporteTotalEnCategoria(arrayBidimensional, totalLibros, cat);
+
+            System.out.println("Categoria " + cat + ": " + librosEnCategoria + " llibres, Import total: "
+                    + importeTotalEnCategoria + ", Percentatge: "
+                    + (importeTotalEnCategoria / calcularImporteTotal(arrayBidimensional, totalLibros)) * 100 + "%");
+        }
+    }
+
+    private static double calcularImporteTotal(int[][] arrayBidimensional, int totalLibros) {
+        double importeTotal = 0;
+        for (int j = 0; j < totalLibros; j++) {
+            importeTotal += arrayBidimensional[j][3] * arrayBidimensional[j][4];
+        }
+        return importeTotal;
+    }
+
+    private static int contarLibrosEnCategoria(int[][] arrayBidimensional, int totalLibros, int categoriaBuscada) {
+        int contador = 0;
+        for (int j = 0; j < totalLibros; j++) {
+            if (arrayBidimensional[j][1] == categoriaBuscada) {
+                contador++;
+            }
+        }
+        return contador;
+    }
+
+    private static double calcularImporteTotalEnCategoria(int[][] arrayBidimensional, int totalLibros,
+            int categoriaBuscada) {
+        double importeTotal = 0;
+        for (int j = 0; j < totalLibros; j++) {
+            if (arrayBidimensional[j][1] == categoriaBuscada) {
+                importeTotal += arrayBidimensional[j][3] * arrayBidimensional[j][4];
+            }
+        }
+        return importeTotal;
+    }
+
+    public static void main(String[] args) {
+        Scanner scan = new Scanner(System.in);
+        boolean dadacorrecta = true;
+        boolean introduirMes = true;
+        int seguir = 0;
+        int[] catDef = new int[MAXCLIENTS];
+        double fcanvi;
+        int icanvi;
+        int i = 0;
+        int codi[] = new int[MAXCLIENTS];
+        int[] categoria = new int[MAXCLIENTS];
+        int[] subcategoria = new int[MAXCLIENTS];
+        double[] preu = new double[MAXCLIENTS];
+        int[] unitat = new int[MAXCLIENTS];
+        int intents = INTENTSMAXIMS;
+        String nomCategoria = "";
+        String nomSubcategoria = "";
+        int[][] arrayBidimensional = new int[MAXCLIENTS][5];
+        do {
+            introduirMes = false;
+            do {
+                System.out.println("Quin codi te el llibre? (100-999)");
+                dadacorrecta = scan.hasNextInt();
+                if (dadacorrecta) {
+                    codi[i] = scan.nextInt();
+                    if (codi[i] < CODIMINIM) {
+                        System.out.println("codi erroni, no pot ser menor de 100");
+                        dadacorrecta = false;
+                    }
+                    if (codi[i] > CODIMAXIM) {
+                        System.out.println("codi erroni, no pot ser major de 999");
+                        dadacorrecta = false;
+                    }
+                }
+                intents--;
+            } while ((!dadacorrecta) && intents > 0);
+
+            if (dadacorrecta) {
+                intents = INTENTSMAXIMS;
+                do {
+                    System.out.println("Quina categoria te? "
+                            + "Educació i formació(0) "
+                            + "Oci i temps lliure(1) "
+                            + "Novel·la(2) "
+                            + "Salut i benestar(3)");
+                    dadacorrecta = scan.hasNextInt();
+                    if (dadacorrecta) {
+                        categoria[i] = scan.nextInt();
+                        if (categoria[i] >= 4) {
+                            System.out.println("codi erroni, torna a probar");
+                            dadacorrecta = false;
+                        }
+                    }
+                    intents--;
+                } while ((!dadacorrecta) && intents > 0);
+
+                do {
+                    intents = INTENTSMAXIMS;
+                    if (dadacorrecta) {
+                        switch (categoria[i]) {
+                            case CATEGORIA0:
+                                intents = INTENTSMAXIMS;
+                                do {
+                                    System.out.println("Subcategoria de formació? "
+                                            + "Ciència i enginyeria(0) "
+                                            + "Biografies i memoriès(1) "
+                                            + "Finances(2) ");
+
+                                    subcategoria[i] = scan.nextInt();
+                                    if (subcategoria[i] >= 3) {
+                                        System.out.println("codi erroni");
+                                        dadacorrecta = false;
+                                    } else {
+                                        switch (subcategoria[i]) {
+                                            case SUBCATEGORIA02:
+                                                nomSubcategoria = NOMCATEGORIA02;
+                                                break;
+
+                                            case SUBCATEGORIA01:
+                                                nomSubcategoria = NOMCATEGORIA01;
+                                                break;
+
+                                            case SUBCATEGORIA00:
+                                                nomSubcategoria = NOMCATEGORIA00;
+                                                break;
+                                        }
+                                    }
+                                    intents--;
+                                } while ((!dadacorrecta) && intents > 0);
+                                break;
+
+                            case CATEGORIA1:
+                                intents = INTENTSMAXIMS;
+                                do {
+                                    System.out.println("Subcategoria de Oci i temps lliure? "
+                                            + "Guies de viatge(0) "
+                                            + "Cuina(1) "
+                                            + "Esports(2) ");
+
+                                    subcategoria[i] = scan.nextInt();
+                                    if (subcategoria[i] >= 3) {
+                                        System.out.println("codi erroni");
+                                        dadacorrecta = false;
+                                    } else {
+                                        switch (subcategoria[i]) {
+                                            case SUBCATEGORIA12:
+                                                nomSubcategoria = NOMCATEGORIA12;
+                                                break;
+
+                                            case SUBCATEGORIA11:
+                                                nomSubcategoria = NOMCATEGORIA11;
+                                                break;
+
+                                            case SUBCATEGORIA10:
+                                                nomSubcategoria = NOMCATEGORIA10;
+                                                break;
+                                        }
+                                    }
+                                    intents--;
+                                } while ((!dadacorrecta) && intents > 0);
+                                break;
+
+                            case CATEGORIA2:
+                                intents = INTENTSMAXIMS;
+                                do {
+                                    System.out.println("Subcategoria de Novel·la? "
+                                            + "Adolescents(0) "
+                                            + "Ciència ficció i fantasia(1) "
+                                            + "Comèdia i humor(2) ");
+
+                                    subcategoria[i] = scan.nextInt();
+                                    if (subcategoria[i] >= 3) {
+                                        System.out.println("codi erroni");
+                                        dadacorrecta = false;
+                                    } else {
+                                        switch (subcategoria[i]) {
+                                            case SUBCATEGORIA22:
+                                                nomSubcategoria = NOMCATEGORIA22;
+                                                break;
+
+                                            case SUBCATEGORIA21:
+                                                nomSubcategoria = NOMCATEGORIA21;
+                                                break;
+
+                                            case SUBCATEGORIA20:
+                                                nomSubcategoria = NOMCATEGORIA20;
+                                                break;
+                                        }
+                                    }
+                                    intents--;
+                                } while ((!dadacorrecta) && intents > 0);
+                                break;
+
+                            case CATEGORIA3:
+                                intents = INTENTSMAXIMS;
+                                do {
+                                    System.out.println("Subcategoria de Salut i benestar? "
+                                            + "Nutrició(0) "
+                                            + "Medicina General(1) "
+                                            + "Fisioteràpia(2) ");
+
+                                    subcategoria[i] = scan.nextInt();
+                                    if (subcategoria[i] >= 3) {
+                                        System.out.println("codi erroni");
+                                        dadacorrecta = false;
+                                    } else {
+                                        switch (subcategoria[i]) {
+                                            case SUBCATEGORIA32:
+                                                nomSubcategoria = NOMCATEGORIA32;
+                                                break;
+
+                                            case SUBCATEGORIA31:
+                                                nomSubcategoria = NOMCATEGORIA31;
+                                                break;
+
+                                            case SUBCATEGORIA30:
+                                                nomSubcategoria = NOMCATEGORIA30;
+                                                break;
+                                        }
+                                    }
+                                    intents--;
+                                } while ((!dadacorrecta) && intents > 0);
+                                break;
+                        }
+                    }
+                    intents--;
+                } while ((!dadacorrecta) && intents > 0);
+            }
+
+            if (dadacorrecta) {
+                intents = INTENTSMAXIMS;
+                do {
+                    System.out.println("Quin preu te el llibre?");
+                    dadacorrecta = scan.hasNextDouble();
+                    preu[i] = scan.nextDouble();
+                    if (preu[i] < PREUMINIM) {
+                        System.out.println("codi erroni");
+                        dadacorrecta = false;
+                    }
+
+                    if (preu[i] > PREUMAXIM) {
+                        System.out.println("codi erroni");
+                        dadacorrecta = false;
+                    }
+
+                    switch (categoria[i]) {
+                        case CATEGORIA0:
+                            nomCategoria = NOMCATEGORIA0;
+                            break;
+
+                        case CATEGORIA1:
+                            nomCategoria = NOMCATEGORIA1;
+                            break;
+
+                        case CATEGORIA2:
+                            nomCategoria = NOMCATEGORIA2;
+                            break;
+
+                        case CATEGORIA3:
+                            nomCategoria = NOMCATEGORIA3;
+                            break;
+                    }
+                    intents--;
+                } while ((!dadacorrecta) && intents > 0);
+            }
+
+            if (dadacorrecta) {
+                intents = INTENTSMAXIMS;
+                do {
+                    System.out.println("Quantes unitats son venudes?");
+                    dadacorrecta = scan.hasNextInt();
+                    unitat[i] = scan.nextInt();
+
+                    if (unitat[i] < UNITATMINIM) {
+                        System.out.println("codi erroni");
+                        dadacorrecta = false;
+                    }
+
+                    if (unitat[i] > UNITATMAXIM) {
+                        System.out.println("codi erroni");
+                        dadacorrecta = false;
+                    }
+                    intents--;
+                } while ((!dadacorrecta) && intents > 0);
+            }
+
+            if (dadacorrecta) {
+                System.out.println("Codi       Categoria       Subcategoria        Preu (€)        Unitats");
+                System.out.println(codi[i] + "        " + nomCategoria + "        " + nomSubcategoria + "       "
+                        + preu[i] + "           " + unitat[i]);
+            }
+            // Assignar valors a l'array bidimensional
+            ARRAY_BIDIMENSIONAL[i][0] = codi[i];
+            ARRAY_BIDIMENSIONAL[i][1] = categoria[i];
+            ARRAY_BIDIMENSIONAL[i][2] = subcategoria[i];
+            ARRAY_BIDIMENSIONAL[i][3] = (int) preu[i];
+            ARRAY_BIDIMENSIONAL[i][4] = unitat[i];
+            i++;
+            if (i < MAXCLIENTS) {
+                System.out.println("Vol introduir més llibres? (Per continuar 1, per aturar 0)");
+                intents = INTENTSMAXIMS;
+                dadacorrecta = scan.hasNextInt();
+                if (dadacorrecta) {
+                    do {
+                        seguir = scan.nextInt();
+                        if (seguir == 1) {
+                            introduirMes = true;
+                        } else if (seguir > 1) {
+                            System.out.println("Error, torni a probar");
+                            dadacorrecta = false;
+                        }
+                        intents--;
+                    } while ((!dadacorrecta) && intents > 0 && i < MAXCLIENTS);
+                }
+            }
+        } while (introduirMes);
+        mostrarResumEstadistic(ARRAY_BIDIMENSIONAL, i);
+        System.out.println("S'han introduit a la peticio: " + i + " unitats");
+
+        System.out.println("Vols mostrar els llibres endreçats per codi? (si=1 ó no=0)");
+        dadacorrecta = scan.hasNextInt();
+        intents = INTENTSMAXIMS;
+        if (dadacorrecta) {
+            seguir = scan.nextInt();
+            do {
+                if (seguir == 1) {
+                    for (int k = 0; k < i - 1; k++) {
+                        for (int j = k + 1; j < i; j++) {
+                            if (codi[k] > codi[j]) {
+                                icanvi = codi[k];
+                                codi[k] = codi[j];
+                                codi[j] = icanvi;
+
+                                icanvi = categoria[k];
+                                categoria[k] = categoria[j];
+                                categoria[j] = icanvi;
+
+                                icanvi = subcategoria[k];
+                                subcategoria[k] = subcategoria[j];
+                                subcategoria[j] = icanvi;
+
+                                fcanvi = preu[k];
+                                preu[k] = preu[j];
+                                preu[j] = fcanvi;
+
+                                icanvi = unitat[k];
+                                unitat[k] = unitat[j];
+                                unitat[j] = icanvi;
+                            }
+                        }
+                    }
+                    System.out.println("Codi "
+                            + "Categoria "
+                            + "Subcategoria "
+                            + "Preu "
+                            + "Unitats ");
+                    for (int j = 0; j < i; j++) {
+                        if (dadacorrecta) {
+                            switch (categoria[j]) {
+                                case CATEGORIA0:
+                                    nomCategoria = NOMCATEGORIA0;
+                                    if (dadacorrecta) {
+                                        switch (subcategoria[j]) {
+                                            case SUBCATEGORIA00:
+                                                nomSubcategoria = NOMCATEGORIA00;
+
+                                                break;
+
+                                            case SUBCATEGORIA01:
+                                                nomSubcategoria = NOMCATEGORIA01;
+                                                break;
+
+                                            case SUBCATEGORIA02:
+                                                nomSubcategoria = NOMCATEGORIA02;
+                                                break;
+                                        }
+                                    }
+                                    break;
+
+                                case CATEGORIA1:
+                                    nomCategoria = NOMCATEGORIA1;
+                                    if (dadacorrecta) {
+                                        switch (subcategoria[j]) {
+                                            case SUBCATEGORIA10:
+                                                nomSubcategoria = NOMCATEGORIA10;
+
+                                                break;
+
+                                            case SUBCATEGORIA11:
+                                                nomSubcategoria = NOMCATEGORIA11;
+                                                break;
+
+                                            case SUBCATEGORIA12:
+                                                nomSubcategoria = NOMCATEGORIA12;
+                                                break;
+                                        }
+                                    }
+                                    break;
+
+                                case CATEGORIA2:
+                                    nomCategoria = NOMCATEGORIA2;
+                                    if (dadacorrecta) {
+                                        switch (subcategoria[j]) {
+                                            case SUBCATEGORIA20:
+                                                nomSubcategoria = NOMCATEGORIA20;
+
+                                                break;
+
+                                            case SUBCATEGORIA21:
+                                                nomSubcategoria = NOMCATEGORIA21;
+                                                break;
+
+                                            case SUBCATEGORIA22:
+                                                nomSubcategoria = NOMCATEGORIA22;
+                                                break;
+                                        }
+                                    }
+                                    break;
+
+                                case CATEGORIA3:
+                                    if (dadacorrecta) {
+                                        switch (subcategoria[j]) {
+                                            case SUBCATEGORIA30:
+                                                nomSubcategoria = NOMCATEGORIA30;
+
+                                                break;
+
+                                            case SUBCATEGORIA31:
+                                                nomSubcategoria = NOMCATEGORIA31;
+                                                break;
+
+                                            case SUBCATEGORIA32:
+                                                nomSubcategoria = NOMCATEGORIA32;
+                                                break;
+                                        }
+                                    }
+                                    break;
+                            }
+                        }
+
+                        System.out.println(codi[j] + " "
+                                + nomCategoria + " "
+                                + nomSubcategoria + " "
+                                + preu[j] + " "
+                                + unitat[j]);
+                    }
+                }
+                if (seguir > 1) {
+                    System.out.println("Error, torni a probar...");
+                    dadacorrecta = false;
+                }
+                intents--;
+            } while ((intents > 0) && (!dadacorrecta));
+        }
+
+        System.out.println("Vols un resum estadístic de les dades? (si=1 ó no=0)");
+        boolean respuestaCorrecta = scan.hasNextInt();
+        intents = INTENTSMAXIMS;
+        if (respuestaCorrecta) {
+            do {
+                int respuesta = scan.nextInt();
+                if (respuesta == 1) {
+                    mostrarResumEstadistic(codi, categoria, preu, unitat, i);
+                }
+                if (respuesta > 1) {
+                    System.out.println("Error, torni a probar.");
+                    respuestaCorrecta = false;
+                }
+                intents--;
+            } while ((intents > 0) && (!respuestaCorrecta));
+        }
+        scan.close();
+    }
+
+    private static void mostrarResumEstadistic(int[] codi, int[] categoria, double[] preu, int[] unitat,
+            int totalLibros) {
+
+        System.out.println("Resum estadístic de les dades:");
+        System.out.println("Número total de llibres: " + totalLibros);
+
+        for (int cat = CATEGORIA0; cat <= CATEGORIA3; cat++) {
+            int librosEnCategoria = contarLibrosEnCategoria(codi, categoria, totalLibros, cat);
+            double importeTotalEnCategoria = calcularImporteTotalEnCategoria(codi, categoria, preu, unitat, totalLibros,
+                    cat);
+
+            System.out.println("Categoria " + cat + ": " + librosEnCategoria + " llibres, Import total: "
+                    + importeTotalEnCategoria);
+        }
+    }
+
+    private static int contarLibrosEnCategoria(int[] codi, int[] categoria, int totalLibros, int categoriaBuscada) {
+        int contador = 0;
+        for (int j = 0; j < totalLibros; j++) {
+            if (categoria[j] == categoriaBuscada) {
+                contador++;
+            }
+        }
+        return contador;
+    }
+
+    private static double calcularImporteTotalEnCategoria(int[] codi, int[] categoria, double[] preu, int[] unitat,
+            int totalLibros, int categoriaBuscada) {
+        double importeTotal = 0;
+        for (int j = 0; j < totalLibros; j++) {
+            if (categoria[j] == categoriaBuscada) {
+                importeTotal += preu[j] * unitat[j];
+            }
+        }
+        return importeTotal;
+    }
+}
